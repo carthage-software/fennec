@@ -24,7 +24,9 @@ pub enum Modifier {
     Abstract(Keyword),
     Readonly(Keyword),
     Public(Keyword),
+    PublicSet(Keyword),
     Protected(Keyword),
+    ProtectedSet(Keyword),
     Private(Keyword),
     PrivateSet(Keyword),
 }
@@ -37,7 +39,9 @@ impl Modifier {
             Modifier::Abstract(k) => k,
             Modifier::Readonly(k) => k,
             Modifier::Public(k) => k,
+            Modifier::PublicSet(k) => k,
             Modifier::Protected(k) => k,
+            Modifier::ProtectedSet(k) => k,
             Modifier::Private(k) => k,
             Modifier::PrivateSet(k) => k,
         }
@@ -58,7 +62,7 @@ impl Modifier {
 
     /// Returns `true` if the modifier is a write visibility modifier.
     pub fn is_write_visibility(&self) -> bool {
-        matches!(self, Modifier::PrivateSet(..))
+        matches!(self, Modifier::PrivateSet(..) | Modifier::ProtectedSet(..) | Modifier::PublicSet(..))
     }
 
     pub fn as_str<'a>(&self, interner: &'a ThreadedInterner) -> &'a str {
@@ -71,6 +75,8 @@ impl Modifier {
             Modifier::Protected(k) => interner.lookup(&k.value),
             Modifier::Private(k) => interner.lookup(&k.value),
             Modifier::PrivateSet(k) => interner.lookup(&k.value),
+            Modifier::ProtectedSet(k) => interner.lookup(&k.value),
+            Modifier::PublicSet(k) => interner.lookup(&k.value),
         }
     }
 }
@@ -85,7 +91,9 @@ impl HasSpan for Modifier {
             | Modifier::Public(value)
             | Modifier::Protected(value)
             | Modifier::Private(value)
-            | Modifier::PrivateSet(value) => value.span(),
+            | Modifier::PrivateSet(value)
+            | Modifier::ProtectedSet(value)
+            | Modifier::PublicSet(value) => value.span(),
         }
     }
 }
@@ -135,7 +143,12 @@ impl Sequence<Modifier> {
         self.iter().find(|modifier| {
             matches!(
                 modifier,
-                Modifier::Public(..) | Modifier::Protected(..) | Modifier::Private(..) | Modifier::PrivateSet(..)
+                Modifier::Public(..)
+                    | Modifier::Protected(..)
+                    | Modifier::Private(..)
+                    | Modifier::PrivateSet(..)
+                    | Modifier::ProtectedSet(..)
+                    | Modifier::PublicSet(..)
             )
         })
     }
@@ -146,7 +159,9 @@ impl Sequence<Modifier> {
     }
 
     pub fn get_first_write_visibility(&self) -> Option<&Modifier> {
-        self.iter().find(|modifier| matches!(modifier, Modifier::PrivateSet(..)))
+        self.iter().find(|modifier| {
+            matches!(modifier, Modifier::PrivateSet(..) | Modifier::ProtectedSet(..) | Modifier::PublicSet(..))
+        })
     }
 
     /// Returns `true` if the sequence contains a visibility modifier for reading or writing.
@@ -187,5 +202,21 @@ impl Sequence<Modifier> {
 
     pub fn contains_private_set(&self) -> bool {
         self.iter().any(|modifier| matches!(modifier, Modifier::PrivateSet(..)))
+    }
+
+    pub fn get_protected_set(&self) -> Option<&Modifier> {
+        self.iter().find(|modifier| matches!(modifier, Modifier::ProtectedSet(..)))
+    }
+
+    pub fn contains_protected_set(&self) -> bool {
+        self.iter().any(|modifier| matches!(modifier, Modifier::ProtectedSet(..)))
+    }
+
+    pub fn get_public_set(&self) -> Option<&Modifier> {
+        self.iter().find(|modifier| matches!(modifier, Modifier::PublicSet(..)))
+    }
+
+    pub fn contains_public_set(&self) -> bool {
+        self.iter().any(|modifier| matches!(modifier, Modifier::PublicSet(..)))
     }
 }

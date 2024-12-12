@@ -36,6 +36,8 @@ pub fn parse_optional_modifier(stream: &mut TokenStream<'_, '_>) -> Result<Optio
         Some(T!["abstract"]) => Modifier::Abstract(utils::expect_any_keyword(stream)?),
         Some(T!["readonly"]) => Modifier::Readonly(utils::expect_any_keyword(stream)?),
         Some(T!["private(set)"]) => Modifier::PrivateSet(utils::expect_any_keyword(stream)?),
+        Some(T!["protected(set)"]) => Modifier::ProtectedSet(utils::expect_any_keyword(stream)?),
+        Some(T!["public(set)"]) => Modifier::PublicSet(utils::expect_any_keyword(stream)?),
         _ => return Ok(None),
     }))
 }

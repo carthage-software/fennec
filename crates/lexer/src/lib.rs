@@ -419,6 +419,22 @@ impl<'a, 'i> Lexer<'a, 'i> {
 
                                     break;
                                 }
+                                // special case for `public(set)`
+                                [b'(', ..] if length == 6 => {
+                                    if self.input.is_at(b"public(set)", true) {
+                                        break 'identifier (TokenKind::PublicSet, 6 + 5);
+                                    }
+
+                                    break;
+                                }
+                                // special case for `protected(set)`
+                                [b'(', ..] if length == 9 => {
+                                    if self.input.is_at(b"protected(set)", true) {
+                                        break 'identifier (TokenKind::ProtectedSet, 9 + 5);
+                                    }
+
+                                    break;
+                                }
                                 _ => {
                                     break;
                                 }

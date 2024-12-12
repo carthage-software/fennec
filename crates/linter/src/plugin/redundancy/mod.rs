@@ -1,3 +1,5 @@
+use rules::redundant_write_visibility::RedundantWriteVisibilityRule;
+
 use crate::plugin::redundancy::rules::redundant_block::RedundantBlockRule;
 use crate::plugin::redundancy::rules::redundant_closing_tag::RedudnantClosingTagRule;
 use crate::plugin::redundancy::rules::redundant_continue::RedundantContinueRule;
@@ -37,6 +39,7 @@ impl Plugin for RedundancyPlugin {
             Box::new(RedundantFinalMethodModifierRule),
             Box::new(RedundantLabelRule),
             Box::new(RedundantIfStatementRule),
+            Box::new(RedundantWriteVisibilityRule),
         ]
     }
 }

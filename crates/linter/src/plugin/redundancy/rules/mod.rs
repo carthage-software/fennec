@@ -8,3 +8,4 @@ pub mod redundant_method_override;
 pub mod redundant_noop;
 pub mod redundant_parentheses;
 pub mod redundant_string_concat;
+pub mod redundant_write_visibility;

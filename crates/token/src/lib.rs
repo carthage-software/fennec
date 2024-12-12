@@ -222,7 +222,9 @@ pub enum TokenKind {
     Private,                     // `private`
     PrivateSet,                  // `private(set)`
     Protected,                   // `protected`
+    ProtectedSet,                // `protected(set)`
     Public,                      // `public`
+    PublicSet,                   // `public(set)`
     QualifiedIdentifier,         // `Namespace\Class`
     Question,                    // `?`
     QuestionColon,               // `?:`
@@ -488,14 +490,23 @@ impl TokenKind {
 
     #[inline(always)]
     pub fn is_visibility_modifier(&self) -> bool {
-        matches!(self, T!["public" | "protected" | "private" | "private(set)"])
+        matches!(self, T!["public" | "protected" | "private" | "private(set)" | "protected(set)" | "public(set)"])
     }
 
     #[inline(always)]
     pub fn is_modifier(&self) -> bool {
         matches!(
             self,
-            T!["public" | "protected" | "private" | "private(set)" | "static" | "final" | "abstract" | "readonly"]
+            T!["public"
+                | "protected"
+                | "private"
+                | "private(set)"
+                | "protected(set)"
+                | "public(set)"
+                | "static"
+                | "final"
+                | "abstract"
+                | "readonly"]
         )
     }
 
@@ -537,7 +548,9 @@ impl TokenKind {
                 | "private"
                 | "private(set)"
                 | "protected"
+                | "protected(set)"
                 | "public"
+                | "public(set)"
                 | "include"
                 | "include_once"
                 | "eval"
@@ -1158,8 +1171,14 @@ macro_rules! T {
     ("protected") => {
         $crate::TokenKind::Protected
     };
+    ("protected(set)") => {
+        $crate::TokenKind::ProtectedSet
+    };
     ("public") => {
         $crate::TokenKind::Public
+    };
+    ("public(set)") => {
+        $crate::TokenKind::PublicSet
     };
     ("Qualified\\Identifier") => {
         $crate::TokenKind::QualifiedIdentifier
